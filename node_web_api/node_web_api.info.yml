@@ -4,5 +4,3 @@ description: 'Provides an API used to get content of page content type node usin
 core: 8.x
 package: 'Custom'
 version: NODEWEBAPI_1.0.0-alpha1
-dependencies:
-  - serialization
