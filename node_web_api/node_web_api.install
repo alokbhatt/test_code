@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function node_web_api_uninstall(){
+  // Delete configuration when uninstall module.
+  \Drupal::configFactory()->getEditable('api_key.siteapikey')->delete();
+}

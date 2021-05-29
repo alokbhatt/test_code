@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Contains node_web_api.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function node_web_api_form_system_site_information_settings_alter(&$form, FormStateInterface $form_state) {
+  // Get configurations
+  $siteapikey = \Drupal::config('api_key.siteapikey')->get('siteapikey');
+
+  // Field set for site api key field
+  $form['api_key'] = [
+    '#type' => 'details',
+    '#title' => t('Site API Key'),
+    '#open' => TRUE,
+  ];
+  $form['api_key']['siteapikey'] = [
+    '#type' => 'textfield',
+    '#title' => t('Site API Key'),
+    '#default_value' => $siteapikey,
+    '#size' => 40,
+    '#description' => t('Enter an API key to validate while access page content.'),
+    '#attributes' => [
+      'placeholder' => t('No API Key yet'),
+    ]
+  ];
+
+  // Form submit button text changed to 'Update Configuration'
+  $form['actions']['submit']['#value'] = t('Update configuration');
+  // Submit handler to store API key value
+  $form['#validate'][] = '_validate_api_key';
+  $form['#submit'][] = '_store_api_key';
+}
+
+/**
+ * @param $form
+ *   Form elements object.
+ * @param FormStateInterface $form_state
+ *   Form state object containing submitted values.
+ *
+ * Form validation function to avoid any inapproriate value.
+ */
+function _validate_api_key(&$form, FormStateInterface $form_state) {
+  if (preg_match('/\s/', $form_state->getValue('siteapikey'))) {
+    $form_state->setErrorByName('siteapikey', t('Please enter valid API key'));
+  }
+}
+
+/**
+ * @param $form
+ *   Form elements object.
+ * @param FormStateInterface $form_state
+ *   Form state object containing submitted values.
+ *
+ * Form submit handler to store custom field value.
+ */
+function _store_api_key(&$form, FormStateInterface $form_state) {
+  $config = \Drupal::service('config.factory')
+    ->getEditable('api_key.siteapikey')
+    ->set('siteapikey', $form_state->getValue('siteapikey'))
+    ->save();
+
+  // this will display message with save API key value
+  \Drupal::messenger()->addMessage(
+    t('The Site API key @siteapikey has been saved.', [
+      '@siteapikey' => $form_state->getValue('siteapikey'),
+    ]));
+}

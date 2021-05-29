@@ -1,0 +1,7 @@
+node_web_api.json_api:
+  path: '/page_json/{api_key}/{nid}'
+  defaults:
+    _controller: '\Drupal\node_web_api\Controller\NodeWebApiController::export'
+    _title: 'Node Web API'
+  requirements:
+    _access: 'TRUE'
